@@ -12,6 +12,7 @@
             <label for="card-type"></label>
             <InputText id="card-type" placeholder="Card type" @bind-Value="@model.CardType"></InputText>
         </div>
+
         <div>
             <label for="set"></label>
             <InputSelect id="set" @bind-Value="@model.Set">
@@ -24,6 +25,7 @@
                 <option value="">Rarity</option>
             </InputSelect>
         </div>
+
         
         <button type="submit" >Search</button>
         <button type="reset">Reset Filters</button>
