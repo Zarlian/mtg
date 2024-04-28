@@ -134,12 +134,12 @@ public partial class MTGContext : DbContext
                 .HasForeignKey(d => d.ArtistId)
                 .HasConstraintName("FK_cards_artists");
 
-            entity.HasOne(d => d.RarityCodeNavigation).WithMany(p => p.Cards)
+            entity.HasOne(d => d.Rarity).WithMany(p => p.Cards)
                 .HasPrincipalKey(p => p.Code)
                 .HasForeignKey(d => d.RarityCode)
                 .HasConstraintName("FK_cards_rarities");
 
-            entity.HasOne(d => d.SetCodeNavigation).WithMany(p => p.Cards)
+            entity.HasOne(d => d.Set).WithMany(p => p.Cards)
                 .HasPrincipalKey(p => p.Code)
                 .HasForeignKey(d => d.SetCode)
                 .OnDelete(DeleteBehavior.ClientSetNull)
