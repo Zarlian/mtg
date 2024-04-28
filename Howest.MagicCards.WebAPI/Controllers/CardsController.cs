@@ -15,9 +15,9 @@ namespace Howest.MagicCards.WebAPI.Controllers
         private readonly ICardRepository _cardRepo;
         private readonly IMapper _mapper;
 
-        public CardsController(IMapper mapper)
+        public CardsController(IMapper mapper, ICardRepository cardRepo)
         {
-            _cardRepo = new CardRepository();
+            _cardRepo = cardRepo;
             _mapper = mapper;
         }
 
