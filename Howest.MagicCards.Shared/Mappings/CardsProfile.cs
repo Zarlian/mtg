@@ -18,5 +18,6 @@ namespace Howest.MagicCards.Shared.Mappings
                 .ForMember(dto => dto.Set,
                             opt => opt.MapFrom(c => c.Set.Name));
         }
+
     }
 }
