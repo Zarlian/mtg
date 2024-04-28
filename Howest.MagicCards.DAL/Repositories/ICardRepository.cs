@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Howest.MagicCards.DAL.Models;
 
 namespace Howest.MagicCards.DAL.Repositories
 {
-    public class ICardRepository
+    public interface ICardRepository
     {
-        public object GetAllCards()
-        {
-            throw new NotImplementedException();
-        }
+        public IQueryable<Card> GetAllCards();
     }
 }
