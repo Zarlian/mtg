@@ -24,7 +24,7 @@ namespace Howest.MagicCards.Shared.Mappings
                     {
                         Id = cardDto.Id,
                         Count = cardDto.Count
-                    }).ToList()));  // Convert List to IQueryable
+                    }).ToList()));  
 
             CreateMap<Deck, DeckDTO>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -34,7 +34,7 @@ namespace Howest.MagicCards.Shared.Mappings
                     {
                         Id = card.Id,
                         Count = card.Count
-                    }).ToList()));  // Convert IQueryable to List
+                    }).ToList())); 
         }
 
     }
