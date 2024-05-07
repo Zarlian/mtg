@@ -17,11 +17,17 @@ namespace Howest.MagicCards.DAL.Repositories
             _db = new MTGContext();
         }
 
-        public IQueryable<Card> GetAllCards()
+        public async Task<IQueryable<Card>> GetAllCardsAsync()
         {
-            IQueryable<Card> allCards = _db.Cards.Take(100);
+            IQueryable<Card> allCards = _db.Cards.Select(c => c)
+                                                 .OrderBy(c => c.Id);
 
-            return allCards;
+            return await Task.FromResult(allCards);
+        }
+
+        public async Task<Card> GetCardByIdAsync(int id)
+        {
+            return await _db.Cards.FirstOrDefaultAsync(c => c.Id == id);
         }
     }
 }
