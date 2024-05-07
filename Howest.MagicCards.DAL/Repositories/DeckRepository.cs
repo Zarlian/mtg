@@ -2,6 +2,7 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
 
+
 namespace Howest.MagicCards.DAL.Repositories
 {
     public class DeckRepository : IDeckRepository
