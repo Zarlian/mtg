@@ -16,7 +16,24 @@ namespace Howest.MagicCards.Shared.Mappings
                 .ForMember(dto => dto.Artist,
                             opt => opt.MapFrom(c => c.Artist.FullName))
                 .ForMember(dto => dto.Set,
-                            opt => opt.MapFrom(c => c.Set.Name));
+                            opt => opt.MapFrom(c => c.Set.Name))
+                .ReverseMap();
+
+            CreateMap<Card, CardDetailDTO>()
+                 .IncludeBase<Card, CardReadDTO>()
+                 .ForMember(dto => dto.CardColors,
+                            opt => opt.MapFrom(c => c.CardColors.Select(cc => cc.Color.Name)))
+                 .ReverseMap();
+
+            CreateMap<CardInDeckDTO, CardInDeck>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Count, opt => opt.MapFrom(src => src.Count));
+
+            CreateMap<CardInDeck, CardInDeckDTO>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Count, opt => opt.MapFrom(src => src.Count));
+
+            
         }
 
     }

@@ -6,6 +6,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddHttpClient("CardsAPI", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7195/api/");
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

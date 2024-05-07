@@ -1,0 +1,81 @@
+﻿@using Howest.MagicCards.Shared.DTO
+
+@* <EditForm @submit.preventDefault="@ShowCards" class="card-filter"> *@
+
+<div class="card-filter">
+    <div class="filter-row">
+        <label for="card-name"></label>
+        <InputText id="card-name" placeholder="Card name" @bind-Value="@model.CardName"></InputText>
+        <label for="card-text"></label>
+        <InputText id="card-text" placeholder="Card text" @bind-Value="@model.CardText"></InputText>
+        <label for="card-type"></label>
+        <InputText id="card-type" placeholder="Card type" @bind-Value="@model.CardType"></InputText>
+    </div>
+
+    <div class="filter-row">
+        <label for="set"></label>
+        <InputSelect id="set" @bind-Value="@model.Set">
+            <option value="">All sets</option>
+            @if (Sets is not null)
+            {
+                foreach (SetReadDTO set in Sets)
+                {
+                    <option value="@set.Name">@set.Name</option>
+                }
+            }
+        </InputSelect>
+
+        <label for="artist"></label>
+        <InputText id="artist" placeholder="Artist" @bind-Value="@model.Artist"></InputText>
+        <label for="rarity"></label>
+
+        <InputSelect id="rarity" @bind-Value="@model.Rarity">
+            <option value="">Rarity</option>
+            @if (Rarities is not null)
+            {
+                foreach (RarityReadDTO rarity in Rarities)
+                {
+                    <option value="@rarity.Name">@rarity.Name</option>
+                }
+            }
+        </InputSelect>
+    </div>
+
+    <div class="filter-row">
+        <button @onclick="ShowCards" class="btn btn-info">Search</button>
+        <button type="reset" class="btn btn-info">Reset Filters</button>
+    </div>
+</div>
+@* </EditForm> *@
+
+
+<style>
+    .filter-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+    .filter-row:last-of-type {
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .card-filter {
+        margin-bottom: 2rem;
+    }
+
+</style>
+
+@code {
+    private Index model = new Index();
+
+    public class Index
+    {
+        public string CardName { get; set; }
+        public string CardText { get; set; }
+        public string CardType { get; set; }
+        public string Set { get; set; }
+        public string Artist { get; set; }
+        public string Rarity { get; set; }
+    }
+}

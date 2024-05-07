@@ -9,5 +9,6 @@
         public string Rarity { get; init; }
         public string Artist { get; init; }
         public string Set { get; init; }
+        public string Type { get; init; }
     }
 }

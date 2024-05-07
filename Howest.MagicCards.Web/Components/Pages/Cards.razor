@@ -1,0 +1,43 @@
+﻿@page "/"
+
+<PageTitle>Cards</PageTitle>
+
+<div class="filter-container">
+    <CardFilter Rarities="_rarities" Sets="_sets" ShowCards="ShowCards"></CardFilter>
+</div>
+
+    <div class="card-board">
+        <h3>
+            Cards
+        </h3>
+
+        @if(_cards == null)
+        {
+            <p>No cards found</p>
+        }
+        else
+        {
+            <CardBoard Cards="_cards"></CardBoard>
+        }
+
+    </div>
+
+
+
+
+
+
+<style>
+    .filter-container {
+        display: flex;
+        justify-content: center;
+    }
+
+    input, select {
+        width: 32%;
+    }
+
+    .card-filter{
+        width:60%;
+    }
+</style>

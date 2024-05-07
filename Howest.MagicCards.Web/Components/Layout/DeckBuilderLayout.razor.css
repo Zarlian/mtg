@@ -2,12 +2,15 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    width: 50%;
+    margin: auto;
 }
 
 main {
     flex: 1;
+    
 }
 
 header{
-    color: red;
+    text-align: center;
 }

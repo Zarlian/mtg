@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{6E25D20E-8C10-485B-A1F3-69BD56805209}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web API", "Web API", "{6D368BFA-5FAE-415F-BC2D-DFCB60877B27}"
+	ProjectSection(SolutionItems) = preProject
+		Howest.MagicCards.Shared\Wrappers\PagedResponse.cs = Howest.MagicCards.Shared\Wrappers\PagedResponse.cs
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web Application", "Web Application", "{AF5F59A0-76E6-4C33-9330-08AFFFDCACEF}"
 EndProject

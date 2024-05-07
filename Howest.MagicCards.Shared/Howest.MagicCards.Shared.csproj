@@ -17,11 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Extensions\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Howest.MagicCards.DAL\Howest.MagicCards.DAL.csproj" />
   </ItemGroup>
+
 
 </Project>
