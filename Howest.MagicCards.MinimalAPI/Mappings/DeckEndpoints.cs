@@ -15,30 +15,46 @@ namespace Howest.MagicCards.MinimalAPI.Mappings
             deckgroup.MapGet($"{urlPrefix}/decks", (IDeckRepository deckRepo) =>
                 GetAllDecks(deckRepo, mapper))
                 .WithTags("Deck actions")
-                .Produces<List<Deck>>(StatusCodes.Status200OK)
+                .Produces<List<DeckDTO>>(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status400BadRequest);
 
-            deckgroup.MapPost($"{urlPrefix}/decks", (IDeckRepository deckRepo, DeckDTO deckDto) =>
-                AddDeck(deckRepo, deckDto, mapper))
-                .WithTags("Deck actions")
-                .Accepts<DeckDTO>("application/json")
-                .Produces(StatusCodes.Status200OK)
-                .Produces(StatusCodes.Status400BadRequest);
-
-            deckgroup.MapGet($"{urlPrefix}/decks{{id}}", (IDeckRepository deckRepo, int deckId) => 
+            deckgroup.MapGet($"{urlPrefix}/decks/{{id}}", (IDeckRepository deckRepo, int deckId) =>
                 GetDeck(deckRepo, deckId, mapper))
                 .WithTags("Deck actions")
-                .Produces<Deck>(StatusCodes.Status200OK)
-                .Produces(StatusCodes.Status400BadRequest);
+                .Produces<DeckDetailDTO>(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status400BadRequest)
+                .Produces(StatusCodes.Status404NotFound);
 
-            deckgroup.MapPost($"{urlPrefix}/decks{{id}}", (IDeckRepository deckRepo, int deckId, CardInDeckDTO cardInDeckDto) =>
-                AddCardToDeck(deckRepo, cardInDeckDto, deckId,  mapper, configuration))
-                .WithTags("Card actions")
-                .Accepts<CardInDeckDTO>("application/json")
+            deckgroup.MapPost($"{urlPrefix}/decks", (IDeckRepository deckRepo, DeckDetailDTO deckDetailDto) =>
+                AddDeck(deckRepo, deckDetailDto, mapper))
+                .WithTags("Deck actions")
+                .Accepts<DeckDetailDTO>("application/json")
                 .Produces(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status400BadRequest);
 
-            deckgroup.MapDelete($"{urlPrefix}/decks{{id}}", (IDeckRepository deckRepo, int deckId) =>
+            deckgroup.MapPut($"{urlPrefix}/decks/{{id}}", (IDeckRepository deckRepo, int deckId, DeckDetailDTO deckDetailDto) =>
+                UpdateDeck(deckRepo, deckId, deckDetailDto, mapper))
+                .WithTags("Deck actions")
+                .Produces<Deck>(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status400BadRequest)
+                .Produces(StatusCodes.Status404NotFound);
+
+            deckgroup.MapPut($"{urlPrefix}/decks/{{deckId}}/cards/{{cardId}}", (IDeckRepository deckRepo, int deckId, int cardId, CardInDeckDTO cardInDeckDto) =>
+                UpdateCardInDeck(deckRepo, deckId, cardId, cardInDeckDto,  mapper, configuration))
+                .WithTags("Deck actions")
+                .Accepts<CardInDeckDTO>("application/json")
+                .Produces(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status400BadRequest)
+                .Produces(StatusCodes.Status404NotFound);
+
+            deckgroup.MapDelete($"{urlPrefix}/decks", (IDeckRepository deckRepo) =>
+                RemoveAllDecks(deckRepo))
+                .WithTags("Deck actions")
+                .Produces(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status400BadRequest);
+
+
+            deckgroup.MapDelete($"{urlPrefix}/decks/{{id}}", (IDeckRepository deckRepo, int deckId) =>
                 RemoveDeck(deckRepo, deckId))
                 .WithTags("Deck actions")
                 .Produces(StatusCodes.Status200OK)
@@ -46,26 +62,11 @@ namespace Howest.MagicCards.MinimalAPI.Mappings
                 .Produces(StatusCodes.Status404NotFound);
         }
 
-
-        private static IResult GetDeck(IDeckRepository deckRepo, int deckId, IMapper mapper)
+        private static async Task<IResult> GetAllDecks(IDeckRepository deckRepo, IMapper mapper)
         {
             try
             {
-                Deck deck = deckRepo.GetDeck(deckId);
-                DeckDetailDTO deckDetailDto = mapper.Map<Deck, DeckDetailDTO>(deck);
-                return Results.Ok(deckDetailDto);
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest($"Error getting deck: {ex.Message}");
-            }
-        }
-
-        private static IResult GetAllDecks(IDeckRepository deckRepo, IMapper mapper)
-        {
-            try
-            {
-                IEnumerable<Deck> decks = deckRepo.GetAllDecks();
+                IEnumerable<Deck> decks = await deckRepo.GetAllDecksAsync();
                 List<DeckDTO> deckDTOs = mapper.Map<IEnumerable<Deck>, List<DeckDTO>>(decks);
                 return Results.Ok(deckDTOs);
             }
@@ -75,49 +76,25 @@ namespace Howest.MagicCards.MinimalAPI.Mappings
             }
         }
 
-        //private static IResult AddCardToDeck(IDeckRepository deckRepo, CardInDeckDTO cardInDeckDto, IMapper mapper, IConfiguration configuration)
-        //{
-        //    try
-        //    {
-        //        CardInDeck cardInDeck = mapper.Map<CardInDeck>(cardInDeckDto);
-
-        //        deckRepo.AddCardToDeck(cardInDeck, configuration.GetValue<int>("AppSettings:MaxCardsDeck"));
-
-        //        return Results.Ok($"Card with id {cardInDeck.Id} with count {cardInDeck.Count} added to deck");
-                
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Results.BadRequest($"Error adding card to deck: {ex.Message}");
-        //    }
-        //}
-
-
-        private static IResult AddCardToDeck(IDeckRepository deckRepo, CardInDeckDTO cardInDeckDto , int deckId, IMapper mapper, IConfiguration configuration)
+        private static async Task<IResult> GetDeck(IDeckRepository deckRepo, int deckId, IMapper mapper)
         {
             try
             {
-                CardInDeck cardInDeck = mapper.Map<CardInDeck>(cardInDeckDto);
-
-                deckRepo.AddCardToDeck(deckId, cardInDeck);
-
-                return Results.Ok($"Card with id {cardInDeck.Id} with count {cardInDeck.Count} added to deck");
-                
-
+                Deck deck = await deckRepo.GetDeckAsync(deckId);
+                DeckDetailDTO deckDetailDto = mapper.Map<Deck, DeckDetailDTO>(deck);
+                return Results.Ok(deckDetailDto);
             }
             catch (Exception ex)
             {
-                return Results.BadRequest($"Error adding card to deck: {ex.Message}");
+                return Results.BadRequest($"Error getting deck: {ex.Message}");
             }
         }
 
-
-        private static IResult AddDeck(IDeckRepository deckRepo, DeckDTO deckDto, IMapper mapper)
+        private static IResult AddDeck(IDeckRepository deckRepo, DeckDetailDTO deckDetailDto, IMapper mapper)
         {
             try
             {
-                Deck deck = mapper.Map<Deck>(deckDto);
+                Deck deck = mapper.Map<Deck>(deckDetailDto);
 
                 deckRepo.AddDeck(deck);
 
@@ -131,11 +108,80 @@ namespace Howest.MagicCards.MinimalAPI.Mappings
             }
         }
 
+        private static async Task<IResult> UpdateDeck(IDeckRepository deckRepo, int deckId, DeckDetailDTO deckDetailDto, IMapper mapper)
+        {
+            if(deckId != deckDetailDto.Id)
+            {
+                return Results.BadRequest("Deck id does not match" );
+            }
+
+            try
+            {
+                Deck foundDeck = await deckRepo.GetDeckAsync(deckId);
+
+                if (foundDeck == null)
+                {
+                    return Results.NotFound($"Deck with id {deckId} not found");
+                }
+
+                Deck deck = mapper.Map<Deck>(deckDetailDto);
+
+                deckRepo.UpdateDeckAsync(deck);
+
+                return Results.Ok($"Deck with id {deck.Id} updated");
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest($"Error updating deck: {ex.Message}");
+            }
+        }
+
+        private static async Task<IResult> UpdateCardInDeck(IDeckRepository deckRepo, int deckId, int cardId, CardInDeckDTO cardInDeckDto, IMapper mapper, IConfiguration configuration)
+        {
+            if(cardId != cardInDeckDto.Id)
+            {
+                return Results.BadRequest("Card id does not match" );
+            }
+
+            try
+            {
+                Deck foundDeck = await deckRepo.GetDeckAsync(deckId);
+
+                if (foundDeck == null)
+                {
+                    return Results.NotFound($"Deck with id {deckId} not found");
+                }
+
+                CardInDeck cardInDeck = mapper.Map<CardInDeck>(cardInDeckDto);
+
+                deckRepo.UpdateCardInDeckAsync(deckId, cardInDeck);
+
+                return Results.Ok($"Card with id {cardInDeck.Id} with count {cardInDeck.Count} updated in deck");
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest($"Error updating card in deck: {ex.Message}");
+            }
+        }
+
+        private static IResult RemoveAllDecks(IDeckRepository deckRepo  )
+        {
+            try
+            {
+                deckRepo.RemoveAllDecksAsync();
+                return Results.Ok("All decks are deleted");
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest($"Error removing all decks: {ex.Message}");
+            }
+        }
+
         private static IResult RemoveDeck(IDeckRepository deckRepo, int deckId)
         {
             try
             {
-                deckRepo.RemoveDeck(deckId);
+                deckRepo.RemoveDeckAsync(deckId);
                 return Results.Ok($"Deck with id {deckId} is deleted");
             }
             catch (ArgumentException ex)
