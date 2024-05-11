@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Amazon.Runtime.Internal.Util;
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Howest.MagicCards.DAL.Models;
 using Howest.MagicCards.DAL.Repositories;
@@ -6,6 +7,7 @@ using Howest.MagicCards.Shared.DTO;
 using Howest.MagicCards.Shared.Wrappers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Howest.MagicCards.WebAPI.Controllers
 {
@@ -18,21 +20,41 @@ namespace Howest.MagicCards.WebAPI.Controllers
 
         private readonly ISetRepository _setRepo;
         private readonly IMapper _mapper;
+        private readonly IMemoryCache _cache;
 
-        public SetController(IMapper mapper, ISetRepository setRepo)
-        {
+        public SetController(IMapper mapper, ISetRepository setRepo, IMemoryCache cache)
+        {   
             _setRepo = setRepo;
             _mapper = mapper;
+            _cache = cache;
         }
 
         
         [HttpGet]
-        public ActionResult<IEnumerable<SetReadDTO>> GetSets()
+        public async Task<ActionResult<IEnumerable<SetReadDTO>>> GetSets()
         {
-            IQueryable<Set> allSets = _setRepo.GetAllSetsAsync().Result;
+            string cacheKey = "Rarities";
 
-            return Ok(allSets.
-                ProjectTo<SetReadDTO>(_mapper.ConfigurationProvider));
+            if (_cache.TryGetValue(cacheKey, out IEnumerable<RarityReadDTO> cachedSets))
+            {
+                return Ok(cachedSets);
+            }
+
+            IQueryable<Set> allSets = await _setRepo.GetAllSetsAsync();
+
+            IEnumerable<SetReadDTO> sets = allSets
+                .ProjectTo<SetReadDTO>(_mapper.ConfigurationProvider)
+                .ToList();
+
+            MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30)
+            };
+
+            _cache.Set(cacheKey, sets, cacheOptions);
+
+            return Ok(sets);
+
         }
     }
 }
