@@ -10,31 +10,24 @@ namespace Howest.MagicCards.Shared.Mappings
         {
             CreateMap<CardInDeckDTO, CardInDeck>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.Count, opt => opt.MapFrom(src => src.Count));
-
-            CreateMap<CardInDeck, CardInDeckDTO>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.Count, opt => opt.MapFrom(src => src.Count));
+                .ForMember(dest => dest.Count, opt => opt.MapFrom(src => src.Count))
+                .ReverseMap();
 
             CreateMap<DeckDTO, Deck>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
-                .ForMember(dest => dest.Cards, opt => opt.MapFrom(src =>
-                    src.Cards.Select(cardDto => new CardInDeck
-                    {
-                        Id = cardDto.Id,
-                        Count = cardDto.Count
-                    }).ToList()));  
+                .ReverseMap();
 
-            CreateMap<Deck, DeckDTO>()
+            CreateMap<DeckDetailDTO, Deck>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.Cards, opt => opt.MapFrom(src =>
-                    src.Cards.Select(card => new CardInDeckDTO
-                    {
-                        Id = card.Id,
-                        Count = card.Count
-                    }).ToList())); 
+                                   src.Cards.Select(cardDto => new CardInDeck
+                                   {
+                                       Id = cardDto.Id,
+                                       Count = cardDto.Count
+                                   }).ToList()))
+                .ReverseMap();
         }
 
     }
