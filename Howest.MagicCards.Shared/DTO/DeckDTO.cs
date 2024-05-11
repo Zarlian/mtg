@@ -7,6 +7,5 @@ namespace Howest.MagicCards.Shared.DTO
 
         public string Name { get; set; }
 
-        public List<CardInDeckDTO> Cards { get; set;}
     }
 }
