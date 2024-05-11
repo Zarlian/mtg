@@ -4,12 +4,14 @@ namespace Howest.MagicCards.DAL.Repositories
 {
     public interface IDeckRepository
     {
-        List<CardInDeck> GetCards();
-        public void AddCardToDeck(CardInDeck cardInDeck, int maxCardsInDeck);
-        public void AddCardToDeck(int deckId, CardInDeck cardInDeck);
-        List<Deck> GetAllDecks();
+        public Task<List<Deck>> GetAllDecksAsync();
+        public Task<Deck> GetDeckAsync(int deckId);
         public void AddDeck(Deck deck);
-        public void RemoveDeck(int deckId);
-        public Deck GetDeck(int deckId);
+        public void UpdateDeckAsync(Deck deck);
+        void UpdateCardInDeckAsync(int deckId, CardInDeck cardInDeck);
+        void RemoveAllDecksAsync();
+        public void RemoveDeckAsync(int deckId);        
+        
+
     }
 }

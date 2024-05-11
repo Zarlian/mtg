@@ -16,45 +16,26 @@ namespace Howest.MagicCards.DAL.Repositories
             _deck = database.GetCollection<Deck>("deck");
         }
 
-        public List<Deck> GetAllDecks()
+        public async Task<List<Deck>> GetAllDecksAsync()
         {
-            return _deck.Find(new BsonDocument()).ToList();
+            return await _deck.Find(x => true).ToListAsync();
         }
 
-        public List<CardInDeck> GetCards()
+        public async Task<Deck> GetDeckAsync(int id)
         {
-            return null;
-            //return _deck.Find(new BsonDocument()).ToList();
-        }
+            Deck foundDeck = await _deck.Find(x => x.Id == id).FirstOrDefaultAsync();
 
-        public void AddCardToDeck(CardInDeck cardInDeck, int maxCardsInDeck)
-        {
-            List<CardInDeck> deckCards = GetCards();
-            if (deckCards.Count >= maxCardsInDeck)
+            if (foundDeck == null)
             {
-                throw new InvalidOperationException("The deck is already full. Cannot add more cards.");
+                throw new ArgumentException("Deck does not exist");
             }
-
-            CardInDeck foundCard = deckCards.FirstOrDefault(x => x.Id == cardInDeck.Id);
-            if (foundCard == null)
-            {
-                //_deck.InsertOne(cardInDeck);
-            }
-            else
-            {
-                throw new ArgumentException("This card is already in the deck");
-            }
+            return foundDeck;
         }
 
-        public void AddCardToDeck(int deckId, CardInDeck cardInDeck)
-        {
-            Deck deck =  GetDeck(deckId);
 
-        }
-
-        public void AddDeck(Deck deck)
+        public async void AddDeck(Deck deck)
         {
-            List<Deck> decks = GetAllDecks();
+            List<Deck> decks = await GetAllDecksAsync();
 
             Deck foundDeck = decks.FirstOrDefault(x =>x.Id == deck.Id);
             if (foundDeck == null)
@@ -67,25 +48,33 @@ namespace Howest.MagicCards.DAL.Repositories
             }
         }
 
-
-        public Deck GetDeck(int id)
+        public async void UpdateDeckAsync(Deck deck)
         {
-            Deck foundDeck = _deck.Find(x => x.Id == id).FirstOrDefault();
+            Deck foundDeck = await GetDeckAsync(deck.Id);
 
-            if(foundDeck == null)
-            {
-                throw new ArgumentException("Deck does not exist");
-            }
-            return foundDeck;
+            await _deck.ReplaceOneAsync(x => x.Id == deck.Id, deck);
+  
         }
 
-        public void RemoveDeck(int deckId)
+        public async void UpdateCardInDeckAsync(int deckId, CardInDeck cardInDeck)
         {
-            Deck deck = GetDeck(deckId);
+            Deck foundDeck = await GetDeckAsync(deckId);
 
-            if (deck != null)
+            if (foundDeck != null)
             {
-                _deck.DeleteOne(x => x.Id == deckId);
+
+                CardInDeck foundCardInDeck = foundDeck.Cards.FirstOrDefault(x => x.Id == cardInDeck.Id);
+
+                if (foundCardInDeck != null)
+                {
+                    foundDeck.Cards.Remove(foundCardInDeck);
+                    foundDeck.Cards.Add(cardInDeck);
+                    await _deck.ReplaceOneAsync(x => x.Id == deckId, foundDeck);
+                }
+                else
+                {
+                    throw new ArgumentException("This card does not exist in this deck.");
+                }
             }
             else
             {
@@ -93,5 +82,23 @@ namespace Howest.MagicCards.DAL.Repositories
             }
         }
 
+        public async void RemoveAllDecksAsync()
+        {
+            await _deck.DeleteManyAsync(x => true);
+        }
+
+        public async void RemoveDeckAsync(int deckId)
+        {
+            Deck deck = await GetDeckAsync(deckId);
+
+            if (deck != null)
+            {
+                await _deck.DeleteOneAsync(x => x.Id == deckId);
+            }
+            else
+            {
+                throw new ArgumentException("This deck does not exist.");
+            }
+        }
     }
 }
