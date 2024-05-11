@@ -16,11 +16,11 @@ namespace Howest.MagicCards.DAL.Repositories
             _db = new MTGContext();
         }
 
-        public IQueryable<Set> GetAllSets()
+        public async Task<IQueryable<Set>> GetAllSetsAsync()
         {
             IQueryable<Set> allSets = _db.Sets.Select(s => s);
 
-            return allSets;
+            return await Task.FromResult(allSets);
         }
     }
 }

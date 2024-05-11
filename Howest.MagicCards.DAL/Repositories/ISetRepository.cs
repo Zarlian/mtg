@@ -4,6 +4,6 @@ namespace Howest.MagicCards.DAL.Repositories
 {
     public interface ISetRepository
     {
-        IQueryable<Set> GetAllSets();
+        Task<IQueryable<Set>> GetAllSetsAsync();
     }
 }

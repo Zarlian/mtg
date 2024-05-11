@@ -16,11 +16,11 @@ namespace Howest.MagicCards.DAL.Repositories
             _db = new MTGContext();
         }
 
-        public IQueryable<Rarity> GetAllRarities()
+        public async Task<IQueryable<Rarity>> GetAllRaritiesAsync()
         {
             IQueryable<Rarity> allRarities = _db.Rarities.Select(r => r);
 
-            return allRarities;
+            return await Task.FromResult(allRarities);
         }
     }
 }
