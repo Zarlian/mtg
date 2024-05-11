@@ -52,8 +52,8 @@ namespace Howest.MagicCards.MinimalAPI.Mappings
             try
             {
                 Deck deck = deckRepo.GetDeck(deckId);
-                DeckDTO deckDto = mapper.Map<Deck, DeckDTO>(deck);
-                return Results.Ok(deckDto);
+                DeckDetailDTO deckDetailDto = mapper.Map<Deck, DeckDetailDTO>(deck);
+                return Results.Ok(deckDetailDto);
             }
             catch (Exception ex)
             {
