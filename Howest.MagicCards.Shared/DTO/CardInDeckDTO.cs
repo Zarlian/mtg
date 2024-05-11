@@ -2,7 +2,7 @@
 {
     public record CardInDeckDTO
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string Count { get; set; }
     }
 }
