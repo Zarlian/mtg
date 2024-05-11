@@ -30,8 +30,6 @@ namespace Howest.MagicCards.GraphQL.Types
             Field(c => c.OriginalType, nullable: true).Description("The original type of the card.");
             Field(c => c.MtgId, nullable: true).Description("The Magic: The Gathering ID of the card.");
             Field(c => c.Variations, nullable: true).Description("The variations of the card.");
-            Field(c => c.CreatedAt, nullable: true).Description("The creation date of the card.");
-            Field(c => c.UpdatedAt, nullable: true).Description("The last update date of the card.");
 
             //// Define relations (if needed)
             //Field<ArtistType, Artist>()

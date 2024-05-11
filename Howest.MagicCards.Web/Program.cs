@@ -11,6 +11,12 @@ builder.Services.AddHttpClient("CardsAPI", client =>
     client.BaseAddress = new Uri("https://localhost:7195/api/");
 });
 
+
+builder.Services.AddHttpClient("DeckAPI", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7079/api/");
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

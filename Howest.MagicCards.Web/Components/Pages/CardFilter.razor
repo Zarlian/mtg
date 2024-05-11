@@ -1,11 +1,12 @@
 ﻿@using Howest.MagicCards.Shared.DTO
+@using Microsoft.AspNetCore.Components.Forms
 
 @* <EditForm @submit.preventDefault="@ShowCards" class="card-filter"> *@
 
 <div class="card-filter">
     <div class="filter-row">
         <label for="card-name"></label>
-        <InputText id="card-name" placeholder="Card name" @bind-Value="@model.CardName"></InputText>
+        <InputText id="card-name" placeholder="Card name" @bind-Value="@model.CardName" />
         <label for="card-text"></label>
         <InputText id="card-text" placeholder="Card text" @bind-Value="@model.CardText"></InputText>
         <label for="card-type"></label>
@@ -27,8 +28,8 @@
 
         <label for="artist"></label>
         <InputText id="artist" placeholder="Artist" @bind-Value="@model.Artist"></InputText>
-        <label for="rarity"></label>
 
+        <label for="rarity"></label>
         <InputSelect id="rarity" @bind-Value="@model.Rarity">
             <option value="">Rarity</option>
             @if (Rarities is not null)

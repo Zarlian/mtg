@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Type = Howest.MagicCards.DAL.Models.Type;
 
 namespace Howest.MagicCards.DAL.Models;
 
@@ -41,6 +40,8 @@ public partial class MTGContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.UseCollation("SQL_Latin1_General_CP1_CI_AS");
+
         modelBuilder.Entity<Artist>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__artists__3213E83FC867953C");

@@ -1,8 +1,6 @@
 ﻿using GraphQL.Types;
-using Howest.MagicCards.GraphQL.Types;
 using Howest.MagicCards.DAL.Repositories;
 using GraphQL;
-using Howest.MagicCards.DAL.Models;
 
 namespace Howest.MagicCards.GraphQL.Queries
 {

@@ -1,0 +1,26 @@
+﻿@using Howest.MagicCards.Shared.DTO
+
+<div class="decks-container">
+    <InputSelect id="set" @bind-Value="@test.DeckName">
+        <option value="">All decks</option>
+        @if (_decks is not null)
+        {
+            foreach (DeckDTO deck in _decks)
+            {
+                <option value="@deck.Name">@deck.Name</option>
+            }
+        }
+    </InputSelect>
+    
+    <button type="button" @onclick=GetDeck></button>
+</div>
+
+
+@code {
+    private Index test = new Index();
+
+    public class Index
+    {
+        public string DeckName { get; set; }
+}
+}

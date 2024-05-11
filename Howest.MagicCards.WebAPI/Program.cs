@@ -6,11 +6,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
+ConfigurationManager config = builder.Configuration;
 
 // Add services to the container.
-
+builder.Services.AddDbContext<MTGContext>
+    (options => options.UseSqlServer(config.GetConnectionString("MTG_Db")));
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddMemoryCache();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(c =>

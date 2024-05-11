@@ -3,12 +3,15 @@ using Howest.MagicCards.DAL.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper.QueryableExtensions;
 using AutoMapper;
-using Shared.Wrappers;
-using Shared.Filters;
+using Howest.MagicCards.Shared.Wrappers;
 using Shared.Extensions;
 using Howest.MagicCards.DAL.Models;
 using Howest.MagicCards.Shared.Filters;
-using Howest.MagicCards.Shared.Wrappers;
+using Shared.Wrappers;
+using Microsoft.Extensions.Caching.Memory;
+using System.Text.Json;
+using Amazon.Runtime.Internal.Util;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Howest.MagicCards.WebAPI.Controllers.V1_1
 {
@@ -19,11 +22,13 @@ namespace Howest.MagicCards.WebAPI.Controllers.V1_1
     {
         private readonly ICardRepository _cardRepo;
         private readonly IMapper _mapper;
+        private readonly IMemoryCache _cache;
 
-        public CardsController(IMapper mapper, ICardRepository cardRepo)
+        public CardsController(IMapper mapper, ICardRepository cardRepo, IMemoryCache cache)
         {
             _cardRepo = cardRepo;
             _mapper = mapper;
+            _cache = cache;
         }
 
         [HttpGet]
@@ -35,6 +40,15 @@ namespace Howest.MagicCards.WebAPI.Controllers.V1_1
 
             try
             {
+                string cacheKey = GetCacheKey(filter);
+
+                PagedResponse<IEnumerable<CardReadDTO>> cachedResponse = _cache.Get<PagedResponse<IEnumerable<CardReadDTO>>>(cacheKey);
+
+                if (cachedResponse != null)
+                {
+                    return Ok(cachedResponse);
+                }
+
                 IQueryable<Card> allCards = await _cardRepo.GetAllCardsAsync();
 
                 IQueryable<Card> filteredCards = allCards.ToFilteredList(filter);
@@ -53,16 +67,25 @@ namespace Howest.MagicCards.WebAPI.Controllers.V1_1
                 int totalCount = filteredCards.Count();
                 int totalPages = (int)Math.Ceiling(totalCount / (double)filter.PageSize);
 
-                return Ok(new PagedResponse<IEnumerable<CardReadDTO>>(
-                    filteredCards
-                    .ToPagedList(filter.PageNumber, filter.PageSize)
-                    .ProjectTo<CardReadDTO>(_mapper.ConfigurationProvider)
-                    .ToList(),
-                    filter.PageNumber,
-                    filter.PageSize,
-                    totalCount,
-                    totalPages)
-                    );
+                PagedResponse<IEnumerable<CardReadDTO>> response = new PagedResponse<IEnumerable<CardReadDTO>>(
+                                                                                    filteredCards
+                                                                                        .ToPagedList(filter.PageNumber, filter.PageSize)
+                                                                                        .ProjectTo<CardReadDTO>(_mapper.ConfigurationProvider)
+                                                                                        .ToList(),
+                                                                                        filter.PageNumber,
+                                                                                        filter.PageSize,
+                                                                                        totalCount,
+                                                                                        totalPages);
+
+
+                MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30)
+                };
+
+                _cache.Set(cacheKey, response, cacheOptions);
+
+                return Ok(response);
             }
             catch (Exception error) 
             {
@@ -76,7 +99,11 @@ namespace Howest.MagicCards.WebAPI.Controllers.V1_1
             }
 
         }
-    }
+        private string GetCacheKey(CardFilter filter)
+        {
+            return $"cards_{JsonSerializer.Serialize(filter)}";
+        }
+    }    
 }
 
 namespace Howest.MagicCards.WebAPI.Controllers.V1_5
@@ -88,11 +115,13 @@ namespace Howest.MagicCards.WebAPI.Controllers.V1_5
     {
         private readonly ICardRepository _cardRepo;
         private readonly IMapper _mapper;
+        private readonly IMemoryCache _cache;
 
-        public CardsController(IMapper mapper, ICardRepository cardRepo)
+        public CardsController(IMapper mapper, ICardRepository cardRepo, IMemoryCache cache)
         {
             _cardRepo = cardRepo;
             _mapper = mapper;
+            _cache = cache;
         }
 
         [HttpGet]
@@ -104,6 +133,15 @@ namespace Howest.MagicCards.WebAPI.Controllers.V1_5
 
             try
             {
+                string cacheKey = GetCacheKey(filter);
+
+                PagedResponse<IEnumerable<CardReadDTO>> cachedResponse = _cache.Get<PagedResponse<IEnumerable<CardReadDTO>>>(cacheKey);
+
+                if (cachedResponse != null)
+                {
+                    return Ok(cachedResponse);
+                }
+
                 IQueryable<Card> allCards = await _cardRepo.GetAllCardsAsync();
 
                 IQueryable<Card> filteredCards = allCards.ToFilteredList(filter);
@@ -122,17 +160,26 @@ namespace Howest.MagicCards.WebAPI.Controllers.V1_5
                 int totalCount = filteredCards.Count();
                 int totalPages = (int)Math.Ceiling(totalCount / (double)filter.PageSize);
 
-                return Ok(new PagedResponse<IEnumerable<CardReadDTO>>(
-                    filteredCards
-                    .Sort(filter.SortBy)
-                    .ToPagedList(filter.PageNumber, filter.PageSize)
-                    .ProjectTo<CardReadDTO>(_mapper.ConfigurationProvider)
-                    .ToList(),
-                    filter.PageNumber,
-                    filter.PageSize,
-                    totalCount,
-                    totalPages)
-                    );
+                PagedResponse<IEnumerable<CardReadDTO>> response = new PagedResponse<IEnumerable<CardReadDTO>>(
+                                                                                    filteredCards
+                                                                                        .Sort(filter.SortBy)
+                                                                                        .ToPagedList(filter.PageNumber, filter.PageSize)
+                                                                                        .ProjectTo<CardReadDTO>(_mapper.ConfigurationProvider)
+                                                                                        .ToList(),
+                                                                                        filter.PageNumber,
+                                                                                        filter.PageSize,
+                                                                                        totalCount,
+                                                                                        totalPages);
+
+
+                MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30)
+                };
+
+                _cache.Set(cacheKey, response, cacheOptions);
+
+                return Ok(response);
             }
             catch (Exception error)
             {
@@ -146,6 +193,12 @@ namespace Howest.MagicCards.WebAPI.Controllers.V1_5
             }
 
         }
+        private string GetCacheKey(CardFilter filter)
+        {
+            return $"cards_{JsonSerializer.Serialize(filter)}";
+        }
+
+    
 
         [HttpGet("{id:int}", Name = "GetCardById")]
         [ProducesResponseType(typeof(CardDetailDTO), 200)]
@@ -155,6 +208,16 @@ namespace Howest.MagicCards.WebAPI.Controllers.V1_5
         {
             try
             {
+
+                string cacheKey = $"card_{id}";
+
+                Response<CardDetailDTO> cachedCard = _cache.Get<Response<CardDetailDTO>>(cacheKey);
+                if (cachedCard != null)
+                {
+                    return cachedCard;
+                }
+
+
                 Card card = await _cardRepo.GetCardByIdAsync(id);
 
                 if (card == null)
@@ -170,7 +233,16 @@ namespace Howest.MagicCards.WebAPI.Controllers.V1_5
 
                 CardDetailDTO cardDetailDto = _mapper.Map<CardDetailDTO>(card);
 
-                return Ok(new Response<CardDetailDTO>(cardDetailDto));
+                Response<CardDetailDTO> response = new Response<CardDetailDTO>(cardDetailDto);
+
+                MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30)
+                };
+
+                _cache.Set(cacheKey, response, cacheOptions);
+
+                return Ok(response);
             }
             catch (Exception error)
             {

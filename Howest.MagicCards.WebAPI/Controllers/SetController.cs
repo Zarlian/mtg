@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Howest.MagicCards.DAL.Models;
 using Howest.MagicCards.DAL.Repositories;
 using Howest.MagicCards.Shared.DTO;
 using Howest.MagicCards.Shared.Wrappers;
@@ -8,7 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Howest.MagicCards.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.1")]
+    [ApiVersion("1.5")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class SetController : ControllerBase
     {
@@ -26,7 +29,9 @@ namespace Howest.MagicCards.WebAPI.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<SetReadDTO>> GetSets()
         {
-            return Ok(_setRepo.GetAllSets().
+            IQueryable<Set> allSets = _setRepo.GetAllSetsAsync().Result;
+
+            return Ok(allSets.
                 ProjectTo<SetReadDTO>(_mapper.ConfigurationProvider));
         }
     }

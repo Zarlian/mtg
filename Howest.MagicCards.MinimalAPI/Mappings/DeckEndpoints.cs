@@ -33,7 +33,7 @@ namespace Howest.MagicCards.MinimalAPI.Mappings
 
             deckgroup.MapPost($"{urlPrefix}/decks{{id}}", (IDeckRepository deckRepo, int deckId, CardInDeckDTO cardInDeckDto) =>
                 AddCardToDeck(deckRepo, cardInDeckDto, deckId,  mapper, configuration))
-                .WithTags("Deck actions")
+                .WithTags("Card actions")
                 .Accepts<CardInDeckDTO>("application/json")
                 .Produces(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status400BadRequest);
