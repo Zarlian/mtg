@@ -33,7 +33,7 @@ namespace Howest.MagicCards.WebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SetReadDTO>>> GetSets()
         {
-            string cacheKey = "Rarities";
+            string cacheKey = "Sets";
 
             if (_cache.TryGetValue(cacheKey, out IEnumerable<RarityReadDTO> cachedSets))
             {
