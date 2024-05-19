@@ -10,6 +10,7 @@ namespace Howest.MagicCards.Shared.Mappings
         {
             CreateMap<CardInDeckDTO, CardInDeck>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.Count, opt => opt.MapFrom(src => src.Count))
                 .ReverseMap();
 
@@ -25,6 +26,7 @@ namespace Howest.MagicCards.Shared.Mappings
                                    src.Cards.Select(cardDto => new CardInDeck
                                    {
                                        Id = cardDto.Id,
+                                       Name = cardDto.Name,
                                        Count = cardDto.Count
                                    }).ToList()))
                 .ReverseMap();
