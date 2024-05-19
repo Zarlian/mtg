@@ -1,6 +1,7 @@
 ﻿using GraphQL.Types;
 using Howest.MagicCards.DAL.Repositories;
 using GraphQL;
+using Howest.MagicCards.DAL.Models;
 
 namespace Howest.MagicCards.GraphQL.Queries
 {
@@ -22,7 +23,7 @@ namespace Howest.MagicCards.GraphQL.Queries
                     string power = context.GetArgument<string>("power");
                     string toughness = context.GetArgument<string>("toughness");
 
-                    return await cardRepo.GetAllCardsAsync();
+                    return await CardQuery.GetCardsAsync(cardRepo, power, toughness);
                 }
                 );
 
@@ -30,9 +31,9 @@ namespace Howest.MagicCards.GraphQL.Queries
                 name: "artists",
                 resolve: async context =>
                 {
-                    return await artistRepo.GetAllArtistsAsync();
+                    IQueryable<Artist> artists = await artistRepo.GetAllArtistsAsync();
+                    return artists.ToList();
                 }
-
                 );
         }
     }
