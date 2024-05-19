@@ -8,7 +8,7 @@ namespace Shared.Extensions;
 
 public static class CardExtensions
 {
-    public static IQueryable<Card> ToFilteredList(this IQueryable<Card> cards, CardFilter filter)
+    public static IQueryable<Card> ToFilteredList(this IQueryable<Card> cards, CardWebFilter filter)
     {
         return cards.Where(c =>    c.Name.Contains(filter.CardName)
                                 & c.Text.Contains(filter.CardText)
