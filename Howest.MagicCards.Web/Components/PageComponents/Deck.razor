@@ -1,0 +1,216 @@
+﻿@using Howest.MagicCards.Shared.DTO
+@inject IJSRuntime JSRuntime
+@inject DeckService deckService
+
+<div class="deck-top-bar">
+    <InputSelect @bind-Value="deckService.selectedDeckId">
+        <option value="" >New deck</option>
+        @if (deckService._decks is not null)
+        {
+            @foreach (DeckDTO deck in deckService._decks)
+            {
+                <option value="@deck.Id">@deck.Name</option>
+            }
+        }
+    </InputSelect>
+
+    @if (string.IsNullOrEmpty(deckService.selectedDeckId))
+    {
+        <button class="btn-create" @onclick="deckService.CreateDeck">Create deck</button>
+    }
+    else
+    {
+        <button class="btn-get" @onclick="deckService.GetDeckById">Get deck</button>
+    }
+
+    <button class="btn-delete-all" @onclick="deckService.DeleteAllDecks">Delete all decks</button>
+</div>
+
+@if (deckService.creatingNewDeck)
+{
+    <div class="create-deck">
+        <label for="deck-name">Deck name</label>
+        <InputText id="deck-name" @bind-Value="deckService.deckName"></InputText>
+
+            <button class="btn-create"  @onclick="deckService.AddDeck">Create deck</button>
+            <button class="btn-cancel"  @onclick="deckService.CancelDeck">Cancel</button>
+    </div>
+}
+else
+{
+    <div class="deck-list">
+        @if (deckService._selectedDeck == null)
+        {
+            <p>No deck selected</p>
+        }
+        else
+        {
+            <h4>@deckService._selectedDeck.Name</h4>
+            @if (deckService._selectedDeck.Cards != null && deckService._selectedDeck.Cards.Count > 0)
+            {
+                @foreach (CardInDeckDTO card in deckService._selectedDeck.Cards)
+                {
+                    <div class="deck-card" >
+                        <div class="card-values">
+                            <button @onclick="() => deckService.DecreaseCardCount(card)">-</button>
+                            <p>@card.Count</p>
+                            <button @onclick="() => deckService.IncreaseCardCount(card)">+</button>
+                        </div>
+
+                        <p @onclick="() => deckService.RemoveCardFromDeck(card)" >@(card.Name)</p>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>No cards in deck</p>
+            }
+
+                <button class="btn-clear"  @onclick="deckService.ClearDeck">Clear deck</button>
+                <button class="btn-delete"  @onclick="deckService.DeleteDeck">Delete deck</button>
+        }
+
+        <p>@deckService._message</p>
+    </div>
+}
+
+
+
+
+<style>
+    .deck-top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #e9ecef;
+        margin-bottom: 1rem;
+        gap: 1rem;
+    }
+
+    .deck-select {
+        max-width: 200px;
+    }
+
+    .create-deck,
+    .deck-list {
+        padding: 1rem;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1rem;
+    }
+
+        .create-deck label,
+        .create-deck input {
+            display: block;
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+    .deck-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .deck-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid #ddd;
+        padding: 0.75rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #fdfdfd;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .deck-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .deck-card p{
+    }
+
+    .card-values {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .deck-container button {
+        background-color: #007bff;
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    .btn-create {
+        background-color: #28a745;
+    }
+
+        .btn-create:hover {
+            background-color: #218838;
+        }
+
+    .btn-delete-all {
+        background-color: #dc3545;
+    }
+
+        .btn-delete-all:hover {
+            background-color: #c82333;
+        }
+
+    .btn-delete {
+        background-color: #dc3545;
+    }
+
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+
+    .btn-clear {
+        background-color: #ffc107;
+    }
+
+        .btn-clear:hover {
+            background-color: #e0a800;
+        }
+
+    .deck-container button:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+    }
+
+    .deck-container input,
+    .deck-container select {
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .deck-container p {
+        margin: 0;
+    }
+</style>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        deckService.OnChange += StateHasChanged;
+        await deckService.GetDecks();
+    }
+
+    public void Dispose()
+    {
+        deckService.OnChange -= StateHasChanged;
+    }
+}
