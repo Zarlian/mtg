@@ -1,0 +1,99 @@
+﻿@page "/card/{CardId:int}"
+@rendermode InteractiveServer
+@inject NavigationManager navigationManager
+@inject CardService cardService
+<div class="card-detail-container">
+
+    @if (cardService._card == null)
+    {
+        <p class="no-card-found">No card found</p>
+    }
+    else
+    {
+        <div class="card-details">
+            <div class="card-image">
+                <img src="@cardService._card.ImageUrl" alt="@cardService._card.Name" />
+            </div>
+            <div class="card-info">
+                <h3>@cardService._card.Name</h3>
+                <p><strong>Text:</strong> @cardService._card.Text</p>
+                <p><strong>Set:</strong> @cardService._card.Set</p>
+                <p><strong>Rarity:</strong> @cardService._card.Rarity</p>
+                <p><strong>Artist:</strong> @cardService._card.Artist</p>
+                <p><strong>Card type:</strong> @cardService._card.Type</p>
+                <p><strong>Mana cost:</strong> @cardService._card.ConvertedManaCost</p>
+                <p><strong>Toughness:</strong> @cardService._card.Toughness</p>
+                <p><strong>Flavor:</strong> @cardService._card.Flavor</p>
+                <p><strong>Layout:</strong> @cardService._card.Layout</p>
+                @foreach (string color in cardService._card.CardColors)
+                {
+                    <p><strong>Color:</strong> @color</p>
+                }
+            </div>
+        </div>
+
+        <button class="btn btn-info" @onclick="NavigateToHomePage" >Back</button>
+    }
+</div>
+
+
+<style>
+    .card-detail-container {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }
+
+    .no-card-found {
+        color: red;
+        font-weight: bold;
+    }
+
+    .card-details {
+        display: flex;
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-image img {
+        max-width: 200px;
+        border-radius: 8px;
+        margin-right: 20px;
+    }
+
+    .card-info {
+        max-width: 400px;
+    }
+
+    .card-info h3 {
+        margin-top: 0;
+    }
+
+    .card-info p {
+        margin: 5px 0;
+    }
+
+    .card-info p strong {
+        display: inline-block;
+        width: 100px;
+    }
+</style>
+
+
+@code{
+
+    [Parameter]
+    public int CardId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await cardService.GetCard(CardId);
+    }
+
+    private void NavigateToHomePage()
+    {
+        navigationManager.NavigateTo("/");
+    }
+
+}
