@@ -1,0 +1,105 @@
+﻿@using Howest.MagicCards.Shared.DTO
+@inject NavigationManager navigationManager
+@inject CardService cardService
+@inject DeckService deckService
+
+<ul class="card-list">
+    @foreach (CardReadDTO card in Cards)
+    {
+        <li>
+            @if (String.IsNullOrEmpty(card.ImageUrl))
+            {
+                <figure>
+                    <div class="icon-container" @onclick="() => NavigateToCardDetail(card.Id)">
+                        <i class="fas fa-info-circle" style="font-size: 30px; color: white;"></i>
+                    </div>
+                    <img src="https://cf.geekdo-images.com/CxJmNl4wR4InjqyNrMdBTw__imagepagezoom/img/KuHBP_jVjw_8gbieS8skQD_-_Ho=/fit-in/1200x900/filters:no_upscale():strip_icc()/pic163749.jpg" alt="@card.Name" @onclick="() => deckService.AddCardToDeck(card.Id,card.Name)"/>
+                    <figcaption>@card.Name</figcaption>
+                    
+                </figure>
+            }
+            else
+            {
+                <figure>
+                    <div class="icon-container" @onclick="() => NavigateToCardDetail(card.Id)">
+                        <i class="fas fa-info-circle" style="font-size: 30px; color: white;"></i>
+                    </div>
+                    <img src="@card.ImageUrl" alt="Card Image" @onclick="() => deckService.AddCardToDeck(card.Id,card.Name)" />
+                    <figcaption>@card.Name</figcaption>
+                </figure>
+            }
+        </li>
+    }
+</ul>
+
+
+<style>
+    .card-list {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        list-style-type: none;
+        padding: 0 1rem;
+        gap: 2rem;
+        margin: 0;
+    }
+
+    .card-list li {
+        width: 20%;
+    }
+
+    .card-list li img {
+        width: 100%;
+        cursor: pointer;
+    }
+
+    .card-list li figcaption {
+        text-align: center;
+        font-size: 1.2rem;
+        background-color: #f8f9fa;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+    }
+
+    .card-list li figure {
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+        position: relative;
+    }
+
+    .card-list li figure:hover {
+        box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.1);
+        transform: scale(1.05);
+    }
+
+    .icon-container{
+        position: absolute; 
+        top: 10px; 
+        right: 10px;
+    }
+
+    .icon-container:hover{
+        cursor: pointer;
+    }
+
+.icon-container i{
+        background-color: #007bff;
+        border-radius: 50%;
+        padding: 0.2rem;
+    }
+
+.icon-container i:hover{
+        background-color: #0056b3;
+        box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+
+@code{
+    public void NavigateToCardDetail(String cardId)
+    {
+        int cardIdInt = int.Parse(cardId);
+        navigationManager.NavigateTo($"/card/{cardIdInt}");
+    }
+}
