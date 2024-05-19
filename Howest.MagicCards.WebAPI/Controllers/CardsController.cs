@@ -35,7 +35,7 @@ namespace Howest.MagicCards.WebAPI.Controllers.V1_1
         [ProducesResponseType(typeof(CardReadDTO), 200)]
         [ProducesResponseType(typeof(string), 404)]
         [ProducesResponseType(typeof(string), 500)]
-        public async Task<ActionResult<PagedResponse<IEnumerable<CardReadDTO>>>> GetCards([FromQuery] CardFilter filter)
+        public async Task<ActionResult<PagedResponse<IEnumerable<CardReadDTO>>>> GetCards([FromQuery] CardWebFilter filter)
         {
 
             try
@@ -99,7 +99,7 @@ namespace Howest.MagicCards.WebAPI.Controllers.V1_1
             }
 
         }
-        private string GetCacheKey(CardFilter filter)
+        private string GetCacheKey(CardWebFilter filter)
         {
             return $"cards_{JsonSerializer.Serialize(filter)}";
         }
@@ -128,7 +128,7 @@ namespace Howest.MagicCards.WebAPI.Controllers.V1_5
         [ProducesResponseType(typeof(CardReadDTO), 200)]
         [ProducesResponseType(typeof(string), 404)]
         [ProducesResponseType(typeof(string), 500)]
-        public async Task<ActionResult<PagedResponse<IEnumerable<CardReadDTO>>>> GetCards([FromQuery] CardFilter filter)
+        public async Task<ActionResult<PagedResponse<IEnumerable<CardReadDTO>>>> GetCards([FromQuery] CardWebFilter filter)
         {
 
             try
@@ -193,7 +193,7 @@ namespace Howest.MagicCards.WebAPI.Controllers.V1_5
             }
 
         }
-        private string GetCacheKey(CardFilter filter)
+        private string GetCacheKey(CardWebFilter filter)
         {
             return $"cards_{JsonSerializer.Serialize(filter)}";
         }
