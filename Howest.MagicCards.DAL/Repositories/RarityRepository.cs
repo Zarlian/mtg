@@ -11,9 +11,9 @@ namespace Howest.MagicCards.DAL.Repositories
     {
         private readonly MTGContext _db;
 
-        public RarityRepository()
+        public RarityRepository(MTGContext db)
         {
-            _db = new MTGContext();
+            _db = db;
         }
 
         public async Task<IQueryable<Rarity>> GetAllRaritiesAsync()

@@ -11,9 +11,9 @@ namespace Howest.MagicCards.DAL.Repositories
     {
         private readonly MTGContext _db;
 
-        public SetRepository()
+        public SetRepository(MTGContext db)
         {
-            _db = new MTGContext();
+            _db = db;
         }
 
         public async Task<IQueryable<Set>> GetAllSetsAsync()
