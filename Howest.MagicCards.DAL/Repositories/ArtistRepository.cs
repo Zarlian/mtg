@@ -18,7 +18,10 @@ namespace Howest.MagicCards.DAL.Repositories
         }
         public async Task<Artist> GetArtistByIdAsync(long id)
         {
-            return await _db.Artists.Where(a => a.Id == id).FirstOrDefaultAsync();
+            return await _db.Artists
+                                    .Include(a => a.Cards)
+                                    .Where(a => a.Id == id)
+                                    .FirstAsync();
         }
 
         public async Task<IQueryable<Artist>> GetAllArtistsAsync()
