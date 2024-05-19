@@ -21,7 +21,7 @@ namespace Howest.MagicCards.DAL.Repositories
             return await _deck.Find(x => true).ToListAsync();
         }
 
-        public async Task<Deck> GetDeckAsync(int id)
+        public async Task<Deck> GetDeckAsync(string id)
         {
             Deck foundDeck = await _deck.Find(x => x.Id == id).FirstOrDefaultAsync();
 
@@ -56,7 +56,7 @@ namespace Howest.MagicCards.DAL.Repositories
   
         }
 
-        public async void UpdateCardInDeckAsync(int deckId, CardInDeck cardInDeck)
+        public async void UpdateCardInDeckAsync(string deckId, CardInDeck cardInDeck)
         {
             Deck foundDeck = await GetDeckAsync(deckId);
 
@@ -87,7 +87,7 @@ namespace Howest.MagicCards.DAL.Repositories
             await _deck.DeleteManyAsync(x => true);
         }
 
-        public async void RemoveDeckAsync(int deckId)
+        public async void RemoveDeckAsync(string deckId)
         {
             Deck deck = await GetDeckAsync(deckId);
 
