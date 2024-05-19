@@ -6,7 +6,7 @@ namespace Howest.MagicCards.GraphQL.Queries
 {
     public class RootQuery : ObjectGraphType
     {
-        public RootQuery(ICardRepository cardRepo) 
+        public RootQuery(ICardRepository cardRepo, IArtistRepository artistRepo) 
         {
             Name = "MGT";
 
@@ -24,6 +24,15 @@ namespace Howest.MagicCards.GraphQL.Queries
 
                     return await cardRepo.GetAllCardsAsync();
                 }
+                );
+
+            FieldAsync<ListGraphType<Types.ArtistType>>(
+                name: "artists",
+                resolve: async context =>
+                {
+                    return await artistRepo.GetAllArtistsAsync();
+                }
+
                 );
         }
     }
