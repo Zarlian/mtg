@@ -29,7 +29,6 @@ namespace Howest.MagicCards.DAL.Repositories
             IQueryable<Artist> allArtists = _db.Artists.Include(a => a.Cards).Select(a => a);
 
             return await Task.FromResult(allArtists);
-            throw new NotImplementedException();
         }
     }
 }
