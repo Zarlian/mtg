@@ -19,8 +19,9 @@ namespace Howest.MagicCards.DAL.Repositories
 
         public async Task<IQueryable<Card>> GetAllCardsAsync()
         {
-            IQueryable<Card> allCards = _db.Cards.Select(c => c)
-                                                 .OrderBy(c => c.Id);
+            IQueryable<Card> allCards = _db.Cards
+                                        .Include(c => c.Artist)
+                                        .Select(c => c);
 
             return await Task.FromResult(allCards);
         }
@@ -34,19 +35,6 @@ namespace Howest.MagicCards.DAL.Repositories
                 .Include(c => c.CardColors)
                     .ThenInclude(cc => cc.Color)
                 .FirstOrDefaultAsync(c => c.Id == id);
-        }
-
-        public async Task<IEnumerable<Card>> GetCardsByArtistIdAsync(long id)
-        {
-            IQueryable<Card> cards = _db.Cards
-                                        .Include(c => c.SetCode)
-                                        .Include(c => c.RarityCode)
-                                        .Include(c => c.CardColors).ThenInclude(cc => cc.Color)
-                                        .Include(c => c.CardTypes).ThenInclude(ct => ct.Type)
-                                        .Where(c => c.ArtistId == id);
-
-            return await cards.ToListAsync();
-
         }
     }
 }
