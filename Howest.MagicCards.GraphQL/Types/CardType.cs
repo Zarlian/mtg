@@ -31,19 +31,7 @@ namespace Howest.MagicCards.GraphQL.Types
             Field(c => c.MtgId, nullable: true).Description("The Magic: The Gathering ID of the card.");
             Field(c => c.Variations, nullable: true).Description("The variations of the card.");
 
-            //// Define relations (if needed)
-            //Field<ArtistType, Artist>()
-            //    .Name("artist")
-            //    .Description("The artist of the card.")
-            //    .Resolve(context => context.Source.Artist);
 
-            //// Example for collection type (CardColors)
-            //Field<ListGraphType<CardColorType>, IEnumerable<CardColor>>()
-            //    .Name("cardColors")
-            //    .Description("The colors associated with the card.")
-            //    .Resolve(context => context.Source.CardColors);
-
-            //// You can similarly define fields for other related entities like Rarity, Set, etc.
         }
     }
 }

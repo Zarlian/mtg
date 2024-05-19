@@ -1,4 +1,5 @@
 using Howest.MagicCards.Web.Components;
+using Howest.MagicCards.Web.Components.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +9,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddHttpClient("CardsAPI", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7195/api/");
+    client.BaseAddress = new Uri("https://localhost:7195/api/v1.5/");
 });
 
 
@@ -16,6 +17,9 @@ builder.Services.AddHttpClient("DeckAPI", client =>
 {
     client.BaseAddress = new Uri("https://localhost:7079/api/");
 });
+
+builder.Services.AddScoped<CardService>();
+builder.Services.AddScoped<DeckService>();
 
 var app = builder.Build();
 

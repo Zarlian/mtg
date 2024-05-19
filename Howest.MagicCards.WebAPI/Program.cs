@@ -11,6 +11,7 @@ ConfigurationManager config = builder.Configuration;
 // Add services to the container.
 builder.Services.AddDbContext<MTGContext>
     (options => options.UseSqlServer(config.GetConnectionString("MTG_Db")));
+
 builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
 builder.Services.AddEndpointsApiExplorer();
