@@ -18,7 +18,7 @@ namespace Howest.MagicCards.MinimalAPI.Mappings
                 .Produces<List<DeckDTO>>(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status400BadRequest);
 
-            deckgroup.MapGet($"{urlPrefix}/decks/{{id}}", (IDeckRepository deckRepo, int deckId) =>
+            deckgroup.MapGet($"{urlPrefix}/decks/{{deckId}}", (IDeckRepository deckRepo, string deckId) =>
                 GetDeck(deckRepo, deckId, mapper))
                 .WithTags("Deck actions")
                 .Produces<DeckDetailDTO>(StatusCodes.Status200OK)
@@ -32,14 +32,14 @@ namespace Howest.MagicCards.MinimalAPI.Mappings
                 .Produces(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status400BadRequest);
 
-            deckgroup.MapPut($"{urlPrefix}/decks/{{id}}", (IDeckRepository deckRepo, int deckId, DeckDetailDTO deckDetailDto) =>
+            deckgroup.MapPut($"{urlPrefix}/decks/{{deckId}}", (IDeckRepository deckRepo, string deckId, DeckDetailDTO deckDetailDto) =>
                 UpdateDeck(deckRepo, deckId, deckDetailDto, mapper))
                 .WithTags("Deck actions")
                 .Produces<Deck>(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status400BadRequest)
                 .Produces(StatusCodes.Status404NotFound);
 
-            deckgroup.MapPut($"{urlPrefix}/decks/{{deckId}}/cards/{{cardId}}", (IDeckRepository deckRepo, int deckId, int cardId, CardInDeckDTO cardInDeckDto) =>
+            deckgroup.MapPut($"{urlPrefix}/decks/{{deckId}}/cards/{{cardId}}", (IDeckRepository deckRepo, string deckId, int cardId, CardInDeckDTO cardInDeckDto) =>
                 UpdateCardInDeck(deckRepo, deckId, cardId, cardInDeckDto,  mapper, configuration))
                 .WithTags("Deck actions")
                 .Accepts<CardInDeckDTO>("application/json")
@@ -54,7 +54,7 @@ namespace Howest.MagicCards.MinimalAPI.Mappings
                 .Produces(StatusCodes.Status400BadRequest);
 
 
-            deckgroup.MapDelete($"{urlPrefix}/decks/{{id}}", (IDeckRepository deckRepo, int deckId) =>
+            deckgroup.MapDelete($"{urlPrefix}/decks/{{deckId}}", (IDeckRepository deckRepo, string deckId) =>
                 RemoveDeck(deckRepo, deckId))
                 .WithTags("Deck actions")
                 .Produces(StatusCodes.Status200OK)
@@ -76,7 +76,7 @@ namespace Howest.MagicCards.MinimalAPI.Mappings
             }
         }
 
-        private static async Task<IResult> GetDeck(IDeckRepository deckRepo, int deckId, IMapper mapper)
+        private static async Task<IResult> GetDeck(IDeckRepository deckRepo, string deckId, IMapper mapper)
         {
             try
             {
@@ -98,7 +98,7 @@ namespace Howest.MagicCards.MinimalAPI.Mappings
 
                 deckRepo.AddDeck(deck);
 
-                return Results.Ok($"Deck with id {deck.Id} added");
+                return Results.Ok($"Deck with added");
 
 
             }
@@ -108,9 +108,9 @@ namespace Howest.MagicCards.MinimalAPI.Mappings
             }
         }
 
-        private static async Task<IResult> UpdateDeck(IDeckRepository deckRepo, int deckId, DeckDetailDTO deckDetailDto, IMapper mapper)
+        private static async Task<IResult> UpdateDeck(IDeckRepository deckRepo, string deckId, DeckDetailDTO deckDetailDto, IMapper mapper)
         {
-            if(deckId != deckDetailDto.Id)
+            if(!deckId.Equals(deckDetailDto.Id))
             {
                 return Results.BadRequest("Deck id does not match" );
             }
@@ -136,7 +136,7 @@ namespace Howest.MagicCards.MinimalAPI.Mappings
             }
         }
 
-        private static async Task<IResult> UpdateCardInDeck(IDeckRepository deckRepo, int deckId, int cardId, CardInDeckDTO cardInDeckDto, IMapper mapper, IConfiguration configuration)
+        private static async Task<IResult> UpdateCardInDeck(IDeckRepository deckRepo, string deckId, int cardId, CardInDeckDTO cardInDeckDto, IMapper mapper, IConfiguration configuration)
         {
             if(cardId != cardInDeckDto.Id)
             {
@@ -177,7 +177,7 @@ namespace Howest.MagicCards.MinimalAPI.Mappings
             }
         }
 
-        private static IResult RemoveDeck(IDeckRepository deckRepo, int deckId)
+        private static IResult RemoveDeck(IDeckRepository deckRepo, string deckId)
         {
             try
             {
