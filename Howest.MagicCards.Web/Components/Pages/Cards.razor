@@ -1,23 +1,55 @@
-﻿
+﻿@page "/"
+@rendermode InteractiveServer
+@inject CardService cardService
+
+
+<PageTitle>Cards</PageTitle>
+
 <div class="filter-container">
-    <CardFilter Rarities="_rarities" Sets="_sets" ShowCards="ShowCards"></CardFilter>
+    <CardFilter @bind-Filter="filter"/>
 </div>
 
+<div class="board-container">
+    <div class="spacer"></div>
     <div class="card-board">
-        <h3>
-            Cards
-        </h3>
 
-        @if(_cards == null)
+        <div class="top-bar">
+            <h3>
+                Cards
+            </h3>
+
+            <div class="sorting">
+                <p>Order By</p>
+                <InputSelect @bind-Value="orderChanged">
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                </InputSelect>
+                <button @onclick="SortBy" class="btn btn-info sort-button">Sort</button>
+            </div>
+        </div>
+        
+        
+        @if (cardService._cards == null)
         {
             <p>No cards found</p>
         }
         else
         {
-            <CardBoard Cards="_cards"></CardBoard>
+            <CardBoard Cards="cardService._cards"/>
         }
 
+        <div class="pagination">
+            <button @onclick="cardService.PreviousPage" disabled="@(cardService._pageNumber == 1)" class="btn btn-info">Previous</button>
+            <span>Page @cardService._pageNumber of @cardService._totalPages</span>
+            <button @onclick="cardService.NextPage" disabled="@(cardService._pageNumber == cardService._totalPages)" class="btn btn-info">Next</button>
+        </div>
+
     </div>
+
+    <div class="deck-container">
+        <Deck/>
+    </div>
+</div>
 
 
 
@@ -25,9 +57,42 @@
 
 
 <style>
+    .board-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 2rem;
+        margin-bottom: 4rem;
+    }
     .filter-container {
         display: flex;
         justify-content: center;
+    }
+    
+    .sorting{
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .sorting p{
+        margin: 0;
+    }
+
+    .top-bar{
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    .sorting select{
+        width: 40%;
+        height: 100%;
+    }
+
+    .sort-button
+    {
+        text-align: center;
     }
 
     input, select {
@@ -37,4 +102,59 @@
     .card-filter{
         width:60%;
     }
+
+    .spacer{
+        width: 20%;
+        flex: 1;
+        margin-left: 2rem;
+    }
+    .deck-container {
+        width: 20%;
+        height: 100%;
+        flex: 1;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        border: solid 1px #e6f0ee;
+        margin-right: 2rem;
+    }
+
+    .card-board {
+        width: 50%;
+        flex: 2;
+        background-color: #e6f0ee;
+        padding: 0.5rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 0.5rem;
+    }
+
+    img{
+        border-radius: 0.5rem;
+    }
+
+    .pagination{
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+
 </style>
+
+@code{
+    private CardWebFilter filter { get; set; } = new CardWebFilter();
+
+    private string orderChanged = "asc";
+
+    private async Task SortBy()
+    {
+        cardService._ordering = orderChanged;
+        await cardService.GetCards(filter);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await cardService.LoadOnStart();
+    }
+}
