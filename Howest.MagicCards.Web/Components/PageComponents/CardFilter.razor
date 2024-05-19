@@ -1,0 +1,92 @@
+﻿@using Howest.MagicCards.Shared.DTO
+@using Microsoft.AspNetCore.Components.Forms
+@inject CardService cardService
+
+<EditForm OnValidSubmit="@Filter" class="card-filter" Model="@filter">
+    <DataAnnotationsValidator />
+    <div class="filter-row">
+        <label for="card-name"></label>
+            <InputText id="card-name" placeholder="Card name" @bind-Value="@filter.CardName" />
+        <ValidationMessage For="@(() => filter.CardName)" />
+        <label for="card-text"></label>
+            <InputText id="card-text" placeholder="Card text" @bind-Value="@filter.CardText"></InputText>
+        <ValidationMessage For="@(() => filter.CardText)" />
+        <label for="card-type"></label>
+            <InputText id="card-type" placeholder="Card type" @bind-Value="@filter.CardType"></InputText>
+        <ValidationMessage For="@(() => filter.CardType)" />
+    </div>
+
+    <div class="filter-row">
+        <label for="set"></label>
+            <InputSelect id="set" @bind-Value="@filter.Set">
+            <option value="">All sets</option>
+            @if (cardService._sets is not null)
+            {
+                    foreach (SetReadDTO set in cardService._sets)
+                {
+                    <option value="@set.Name">@set.Name</option>
+                }
+            }
+        </InputSelect>
+
+        <label for="artist"></label>
+        <InputText id="artist" placeholder="Artist" @bind-Value="@filter.Artist"></InputText>
+        <ValidationMessage For="@(() => filter.Artist)" />
+
+        <label for="rarity"></label>
+            <InputSelect id="rarity" @bind-Value="@filter.Rarity">
+            <option value="">Rarity</option>
+            @if (cardService._rarities is not null)
+            {
+                    foreach (RarityReadDTO rarity in cardService._rarities)
+                {
+                    <option value="@rarity.Name">@rarity.Name</option>
+                }
+            }
+        </InputSelect>
+    </div>
+
+    <div class="filter-row">
+        <button type="submit" class="btn btn-info">Filter</button>
+        <button type="reset" class="btn btn-info" @onclick="() => cardService.GetCards(filter)">Reset Filters</button>
+    </div>
+</EditForm>
+
+
+<style>
+    .filter-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+    .filter-row:last-of-type {
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .card-filter {
+        margin-bottom: 1rem;
+        
+    }
+
+    .filter-container{
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 3rem;
+    }
+
+</style>
+
+
+ @code{
+    [Parameter]
+    public CardWebFilter filter { get; set; }
+
+    [Parameter]
+    public EventCallback<CardWebFilter> FilterChanged { get; set; }
+
+    private async Task Filter()
+    {
+        await cardService.GetCards(filter);
+        await FilterChanged.InvokeAsync(filter);
+    }
+ }
