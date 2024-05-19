@@ -12,9 +12,9 @@ namespace Howest.MagicCards.DAL.Repositories
     {
         private readonly MTGContext _db;
 
-        public CardRepository()
+        public CardRepository(MTGContext db)
         {
-            _db = new MTGContext();
+            _db = db;
         }
 
         public async Task<IQueryable<Card>> GetAllCardsAsync()
@@ -36,11 +36,17 @@ namespace Howest.MagicCards.DAL.Repositories
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task<IQueryable<Card>> GetCardsByArtistIdAsync(long id)
+        public async Task<IEnumerable<Card>> GetCardsByArtistIdAsync(long id)
         {
-            IQueryable<Card> cards =  _db.Cards.Where(c => c.ArtistId == id);
+            IQueryable<Card> cards = _db.Cards
+                                        .Include(c => c.SetCode)
+                                        .Include(c => c.RarityCode)
+                                        .Include(c => c.CardColors).ThenInclude(cc => cc.Color)
+                                        .Include(c => c.CardTypes).ThenInclude(ct => ct.Type)
+                                        .Where(c => c.ArtistId == id);
 
-            return await Task.FromResult(cards);
+            return await cards.ToListAsync();
+
         }
     }
 }
