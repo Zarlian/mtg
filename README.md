@@ -36,3 +36,7 @@ The project provided valuable experience in developing and consuming APIs in .NE
 ### Others:
 - **GraphQL**: For flexible querying of data.
 - **Minimal API**: For lightweight and fast API operations.
+
+## Lessons Learned
+
+This project marked our first large-scale experience with .NET and Blazor. We gained hands-on experience in developing and consuming APIs, working with multiple API types (minimal API, WebAPI, and GraphQL), and connecting them to a frontend. We also learned how to manage both relational and non-relational databases (SQL Server and MongoDB) in a real-world application. The project solidified our knowledge of full-stack development and enhanced our teamwork and problem-solving abilities.
